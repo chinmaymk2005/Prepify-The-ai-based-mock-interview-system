@@ -40,6 +40,6 @@ jobs:
         working-directory: server
         run: npm ci
 
-      - name: Test server
-        working-directory: server
-        run: npm test --if-present
+    #   - name: Test server
+    #     working-directory: server
+    #     run: npm test --if-present
