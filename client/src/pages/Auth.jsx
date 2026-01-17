@@ -6,7 +6,6 @@ import { AuthContext } from "../context/AuthContext";
 export default function Auth() {
     const navigate = useNavigate();
     const { login } = useContext(AuthContext);
-
     const [isLogin, setIsLogin] = useState(true);
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -64,12 +63,32 @@ export default function Auth() {
 
         setLoading(true);
         try {
-            // Simulate API call
-            await new Promise((resolve) => setTimeout(resolve, 1000));
+            const endpoint = isLogin ? "/auth/login" : "/auth/signup";
+            const payload = isLogin
+                ? { email: formData.email, password: formData.password }
+                : {
+                    name: formData.name,    
+                    email: formData.email,
+                    targetRole: formData.targetRole,
+                    experienceLevel: formData.experienceLevel,
+                    password: formData.password,
+                };
 
-            // Mock token - in real app, get from backend
-            const mockToken = `token_${Date.now()}`;
-            login(mockToken);
+            const response = await fetch(`http://localhost:3000/api${endpoint}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",                    
+                },
+                body: JSON.stringify(payload),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                login(data.token);
+            } else {
+                setError(data.message || "Authentication failed");
+            }
 
             // Reset form
             setFormData({ name: "", email: "", password: "", confirmPassword: "" });
