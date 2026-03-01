@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { LogOut, ChevronDown, Zap, Target, TrendingUp, Clock, Award, BarChart3, Play, BookOpen, Users } from "lucide-react";
+import { LogOut, ChevronDown, Zap, Target, TrendingUp, Clock, Award, BarChart3, Play, BookOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {

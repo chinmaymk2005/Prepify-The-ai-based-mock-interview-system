@@ -92,7 +92,7 @@ export default function Home() {
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <button
-                onClick={() => navigate("/interview")}
+                onClick={() => navigate("/authentication")}
                 className="px-8 py-4 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg transition-all duration-300 shadow-md hover:shadow-orange-400 text-center"
               >
                 Start Practicing Now
@@ -190,7 +190,7 @@ export default function Home() {
 
             <div className="relative z-10 flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <button
-                onClick={() => navigate("/interview")}
+                onClick={() => navigate("/authentication")}
                 className="px-10 py-4 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-lg transition-all duration-300 shadow-md hover:shadow-orange-400 text-lg"
               >
                 Start Free Practice

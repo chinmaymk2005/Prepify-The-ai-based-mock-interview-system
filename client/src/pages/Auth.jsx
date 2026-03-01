@@ -86,15 +86,13 @@ export default function Auth() {
 
             if (response.ok) {
                 login(data.token);
+                // Reset form
+                setFormData({ name: "", email: "", password: "", confirmPassword: "", targetRole: "", experienceLevel: "" });
+                // Redirect to dashboard only on success
+                navigate("/dashboard");
             } else {
                 setError(data.message || "Authentication failed");
             }
-
-            // Reset form
-            setFormData({ name: "", email: "", password: "", confirmPassword: "" });
-
-            // Redirect to dashboard
-            navigate("/dashboard");
         } catch (err) {
             setError("Authentication failed. Please try again.");
         } finally {
