@@ -103,7 +103,7 @@ export default function Dashboard() {
 
         {/* Primary Action Cards */}
         <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <button className="group bg-white border border-neutral-200 rounded-xl p-6 hover:shadow-lg hover:border-orange-300 transition-all duration-300">
+          <button className="cursor-pointer group bg-white border border-neutral-200 rounded-xl p-6 hover:shadow-lg hover:border-orange-300 transition-all duration-300" onClick={() => navigate("/interview")}>
             <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-orange-600 transition-colors">
               <Play className="w-6 h-6 text-orange-600 group-hover:text-white" />
             </div>

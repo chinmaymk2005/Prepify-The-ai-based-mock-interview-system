@@ -6,6 +6,7 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Interview from "./pages/Interview";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Feedback from "./pages/Feedback";
 
 export default function App() {
   return (
@@ -25,6 +26,15 @@ export default function App() {
         element={
           <ProtectedRoute>
             <Interview />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/feedback"
+        element={
+          <ProtectedRoute>
+            <Feedback />
           </ProtectedRoute>
         }
       />
