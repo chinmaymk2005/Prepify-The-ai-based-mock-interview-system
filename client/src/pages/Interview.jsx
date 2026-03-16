@@ -1,88 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
-import { Mic, MicOff, Video, VideoOff, Phone, Send } from 'lucide-react';
+import { Mic, MicOff, Video, VideoOff, Phone } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 
-const Message = ({ role, content }) => {
-  const isUser = role === 'user';
-  return (
-    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4`}>
-      <div
-        className={`max-w-xs px-4 py-2 rounded-lg ${
-          isUser
-            ? 'bg-orange-500 text-white rounded-br-none'
-            : 'bg-gray-100 text-gray-900 rounded-bl-none'
-        }`}
-      >
-        <p className="text-sm">{content}</p>
-      </div>
-    </div>
-  );
-};
-
-const ChatBox = ({ messages, onSendMessage }) => {
-  const [inputValue, setInputValue] = useState('');
-  const messagesEndRef = useRef(null);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  const handleSend = () => {
-    if (inputValue.trim()) {
-      onSendMessage(inputValue);
-      setInputValue('');
-    }
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
-
-  return (
-    <div className="flex flex-col h-full bg-white rounded-lg shadow-md">
-      <div className="flex-1 overflow-y-auto p-4">
-        {messages.length === 0 ? (
-          <div className="flex items-center justify-center h-full text-gray-400">
-            <p>Interview starting...</p>
-          </div>
-        ) : (
-          messages.map((msg, idx) => (
-            <Message key={idx} role={msg.role} content={msg.content} />
-          ))
-        )}
-        <div ref={messagesEndRef} />
-      </div>
-      <div className="border-t border-gray-200 p-4">
-        <div className="flex gap-2">
-          <textarea
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Type your response or paste speech-to-text here..."
-            className="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none"
-            rows="2"
-          />
-          <button
-            onClick={handleSend}
-            className="bg-orange-500 hover:bg-orange-600 text-white p-3 rounded-lg transition-colors"
-          >
-            <Send size={20} />
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const VideoPanel = ({ isCameraOn }) => {
+const UserVideo = ({ isCameraOn }) => {
   const videoRef = useRef(null);
 
   useEffect(() => {
@@ -99,31 +20,33 @@ const VideoPanel = ({ isCameraOn }) => {
   }, [isCameraOn]);
 
   return (
-    <div className="flex flex-col gap-4 h-full">
-      <div className="relative bg-gray-900 rounded-lg shadow-md overflow-hidden flex-1">
-        {isCameraOn ? (
-          <video
-            ref={videoRef}
-            autoPlay
-            playsInline
-            muted
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <VideoOff size={48} className="text-gray-600" />
-          </div>
-        )}
-      </div>
+    <div className="relative bg-gray-900 rounded-lg shadow-md overflow-hidden h-72 flex-1">
+      {isCameraOn ? (
+        <video
+          ref={videoRef}
+          autoPlay
+          playsInline
+          muted
+          className="w-full h-full object-cover"
+        />
+      ) : (
+        <div className="w-full h-full flex items-center justify-center">
+          <VideoOff size={48} className="text-gray-600" />
+        </div>
+      )}
+    </div>
+  );
+};
 
-      <div className="bg-white rounded-lg shadow-md p-6 flex flex-col items-center gap-4">
-        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center">
-          <span className="text-2xl text-white font-bold">AI</span>
-        </div>
-        <div className="text-center">
-          <p className="font-semibold text-gray-900">Interview Assistant</p>
-          <p className="text-sm text-gray-500">Ready to talk</p>
-        </div>
+const AIAssistant = () => {
+  return (
+    <div className="bg-white rounded-lg shadow-md p-5 flex flex-col items-center justify-center h-72 flex-1">
+      <div className="w-24 h-24 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center mb-4">
+        <span className="text-4xl text-white font-bold">AI</span>
+      </div>
+      <div className="text-center">
+        <p className="font-semibold text-gray-900 text-lg">Interview Assistant</p>
+        <p className="text-sm text-gray-500 mt-2">Ready to talk</p>
       </div>
     </div>
   );
@@ -191,27 +114,8 @@ const Timer = ({ duration }) => {
 };
 
 export default function Interview() {
-  const [messages, setMessages] = useState([
-    {
-      role: 'ai',
-      content: "Hello! I'm your AI interviewer. Let's start with a warm-up question. Can you tell me about your most recent project?"
-    }
-  ]);
   const [isMicOn, setIsMicOn] = useState(true);
   const [isCameraOn, setIsCameraOn] = useState(true);
-
-  const handleSendMessage = (content) => {
-    setMessages((prev) => [...prev, { role: 'user', content }]);
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: 'ai',
-          content: 'That sounds interesting. Can you tell me more about the technical challenges you faced?'
-        }
-      ]);
-    }, 1000);
-  };
 
   const handleEndInterview = () => {
     alert('Interview ended. Thank you for participating!');
@@ -242,21 +146,28 @@ export default function Interview() {
         </div>
       </header>
 
-      <div className="flex-1 overflow-hidden p-6 gap-6 flex">
-        <div className="w-96 flex flex-col gap-4">
-          <VideoPanel isCameraOn={isCameraOn} />
-          <Controls
-            isMicOn={isMicOn}
-            isCameraOn={isCameraOn}
-            onMicToggle={() => setIsMicOn(!isMicOn)}
-            onCameraToggle={() => setIsCameraOn(!isCameraOn)}
-            onEndInterview={handleEndInterview}
-          />
+      <div className="flex-1 overflow-hidden p-6 flex flex-col gap-6">
+        {/* Video and AI Assistant Section */}
+        <div className="flex gap-6">
+          {/* Left: User Camera */}
+          <div className="flex-1">
+            <UserVideo isCameraOn={isCameraOn} />
+          </div>
+          
+          {/* Right: AI Assistant */}
+          <div className="flex-1">
+            <AIAssistant />
+          </div>
         </div>
 
-        <div className="flex-1 flex flex-col">
-          <ChatBox messages={messages} onSendMessage={handleSendMessage} />
-        </div>
+        {/* Controls Section */}
+        <Controls
+          isMicOn={isMicOn}
+          isCameraOn={isCameraOn}
+          onMicToggle={() => setIsMicOn(!isMicOn)}
+          onCameraToggle={() => setIsCameraOn(!isCameraOn)}
+          onEndInterview={handleEndInterview}
+        />
       </div>
     </div>
   );
