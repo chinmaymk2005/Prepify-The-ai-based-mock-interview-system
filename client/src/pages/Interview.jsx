@@ -58,11 +58,10 @@ const Controls = ({ isMicOn, isCameraOn, onMicToggle, onCameraToggle, onEndInter
     <div className="flex justify-center gap-4 items-center bg-white rounded-lg shadow-md p-4">
       <button
         onClick={onMicToggle}
-        className={`p-3 rounded-full transition-colors ${
-          isMicOn
+        className={`p-3 rounded-full transition-colors ${isMicOn
             ? 'bg-orange-500 hover:bg-orange-600 text-white'
             : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
-        }`}
+          }`}
         title={isMicOn ? 'Mute' : 'Unmute'}
       >
         {isMicOn ? <Mic size={24} /> : <MicOff size={24} />}
@@ -70,11 +69,10 @@ const Controls = ({ isMicOn, isCameraOn, onMicToggle, onCameraToggle, onEndInter
 
       <button
         onClick={onCameraToggle}
-        className={`p-3 rounded-full transition-colors ${
-          isCameraOn
+        className={`p-3 rounded-full transition-colors ${isCameraOn
             ? 'bg-orange-500 hover:bg-orange-600 text-white'
             : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
-        }`}
+          }`}
         title={isCameraOn ? 'Turn off camera' : 'Turn on camera'}
       >
         {isCameraOn ? <Video size={24} /> : <VideoOff size={24} />}
@@ -116,10 +114,33 @@ const Timer = ({ duration }) => {
 export default function Interview() {
   const [isMicOn, setIsMicOn] = useState(true);
   const [isCameraOn, setIsCameraOn] = useState(true);
+  const [LLMResponse, setLLMResponse] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleEndInterview = () => {
     alert('Interview ended. Thank you for participating!');
   };
+
+  const llmTest = async () => {
+    try {
+      setIsLoading(true);
+      const res = await fetch('http://localhost:3000/api/llm/test-llm', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ prompt: 'Hello, LLM!' })
+      });
+      const data = await res.json();
+      console.log('LLM Response:', data);
+      setLLMResponse(data.response);
+    } catch (err) {
+      console.error('LLM Test Error:', err);
+      setLLMResponse('Error fetching LLM response');
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   return (
     <div className="h-screen bg-gradient-to-br from-orange-50 to-neutral-50 flex flex-col">
@@ -138,25 +159,40 @@ export default function Interview() {
               <div className="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-semibold">
                 Technical
               </div>
-              <div className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">
+              {/* <div className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">
                 Live Coding
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
       </header>
 
-      <div className="flex-1 overflow-hidden p-6 flex flex-col gap-6">
+      <div className="flex-1 overflow-y-auto p-3 flex flex-col gap-3">
         {/* Video and AI Assistant Section */}
         <div className="flex gap-6">
           {/* Left: User Camera */}
           <div className="flex-1">
             <UserVideo isCameraOn={isCameraOn} />
           </div>
-          
+
           {/* Right: AI Assistant */}
           <div className="flex-1">
             <AIAssistant />
+          </div>
+        </div>
+
+        <div className=' flex flex-col'>
+          <div className="flex justify-center mt-4">
+            <button
+              onClick={llmTest}
+              disabled={isLoading}
+              className="hover:cursor-pointer px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium"
+            >
+              {isLoading ? 'Loading...' : 'Send input to LLM'}
+            </button>
+          </div>
+          <div>
+            {LLMResponse && <p className="text-center mt-4 text-gray-700">{LLMResponse}</p>}
           </div>
         </div>
 
