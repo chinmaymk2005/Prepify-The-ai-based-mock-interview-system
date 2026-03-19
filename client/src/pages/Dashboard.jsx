@@ -111,7 +111,7 @@ export default function Dashboard() {
             <p className="text-sm text-neutral-600 text-left">Begin a full mock interview session</p>
           </button>
 
-          <button className="group bg-white border border-neutral-200 rounded-xl p-6 hover:shadow-lg hover:border-orange-300 transition-all duration-300">
+          <button onClick={() => navigate("/interview")} className="cursor-pointer group bg-white border border-neutral-200 rounded-xl p-6 hover:shadow-lg hover:border-orange-300 transition-all duration-300">
             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-blue-600 transition-colors">
               <BookOpen className="w-6 h-6 text-blue-600 group-hover:text-white" />
             </div>
@@ -119,7 +119,7 @@ export default function Dashboard() {
             <p className="text-sm text-neutral-600 text-left">Answer questions about your background</p>
           </button>
 
-          <button className="group bg-white border border-neutral-200 rounded-xl p-6 hover:shadow-lg hover:border-orange-300 transition-all duration-300">
+          <button onClick={() => navigate("/interview")} className="cursor-pointer group bg-white border border-neutral-200 rounded-xl p-6 hover:shadow-lg hover:border-orange-300 transition-all duration-300">
             <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-purple-600 transition-colors">
               <Target className="w-6 h-6 text-purple-600 group-hover:text-white" />
             </div>
@@ -226,7 +226,7 @@ export default function Dashboard() {
 
         {/* Call-to-Action Section */}
         <section className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <button className="bg-orange-600 hover:bg-orange-700 text-white rounded-xl p-6 transition-colors duration-300 shadow-md hover:shadow-lg">
+          <button onClick={() => navigate("/interview")} className="cursor-pointer bg-orange-600 hover:bg-orange-700 text-white rounded-xl p-6 transition-colors duration-300 shadow-md hover:shadow-lg">
             <div className="flex items-center gap-3 justify-center">
               <Play className="w-5 h-5" />
               <span className="text-lg font-semibold">Continue Practice</span>
@@ -234,7 +234,7 @@ export default function Dashboard() {
             <p className="text-orange-100 text-sm mt-2 text-center">Resume your last interview session</p>
           </button>
 
-          <button className="bg-neutral-200 hover:bg-neutral-300 text-neutral-900 rounded-xl p-6 transition-colors duration-300">
+          <button onClick={() => navigate("/interview")} className="cursor-pointer bg-neutral-200 hover:bg-neutral-300 text-neutral-900 rounded-xl p-6 transition-colors duration-300">
             <div className="flex items-center gap-3 justify-center">
               <BarChart3 className="w-5 h-5" />
               <span className="text-lg font-semibold">View Detailed Feedback</span>
