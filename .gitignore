@@ -1,0 +1,19 @@
+# Environment variables
+server/.env
+client/.env
+server/python/.env
+# Node modules
+node_modules/
+server/node_modules/
+client/node_modules/
+
+client/package-lock.json
+server/package-lock.json
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build files
+dist/
+build/
