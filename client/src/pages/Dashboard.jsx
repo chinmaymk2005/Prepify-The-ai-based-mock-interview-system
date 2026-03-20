@@ -9,10 +9,10 @@ export default function Dashboard() {
   const [profileDropdown, setProfileDropdown] = useState(false);
 
   const mockUserData = {
-    name: "John Doe",
-    targetRole: "Senior Software Engineer",
-    experienceLevel: "Mid-level",
-    email: "john@example.com",
+    name: "Priyanshu Ingle",
+    targetRole: "ML Engineer",
+    experienceLevel: "Fresher",
+    email: "priyanshu.ingle@example.com",
   };
 
   const mockStats = {
