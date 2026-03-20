@@ -1,6 +1,7 @@
 # Environment variables
 server/.env
 client/.env
+server/python/.env
 
 # Node modules
 node_modules/

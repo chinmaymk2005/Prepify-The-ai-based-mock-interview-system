@@ -1,0 +1,18 @@
+[
+    {
+        "speaker": "Candidate",
+        "text": "[System Start Trigger]"
+    },
+    {
+        "speaker": "Interviewer",
+        "text": "Hello Priyanshu, welcome! Thank you for joining us today. To start, could you please briefly introduce yourself and tell us a bit about your background?"
+    },
+    {
+        "speaker": "Candidate",
+        "text": "\u0917\u0941\u0921 \u092e\u0949\u0930\u094d\u0928\u093f\u0902\u0917, \u092e\u093e\u092f \u0928\u0947\u092e \u0907\u091c \u0936\u0941\u092d\u092e \u0932\u094b\u0932\u0947. \u0906\u092f \u090f\u092e \u0915\u0930\u0947\u0902\u091f\u0932\u0940 \u092a\u0930\u094d\u0938\u0940\u0935\u093f\u0902\u0917 \u0915\u0902\u092a\u094d\u092f\u0942\u091f\u0930 \u0907\u0902\u091c\u0940\u0928\u093f\u092f\u0930\u093f\u0902\u0917 \u0907\u0928 \u0926\u0924\u094d\u0924\u093e \u092e\u0902\u0917\u0947 \u0915\u0949\u0932\u0947\u091c \u0911\u092b \u0907\u0902\u091c\u0940\u0928\u093f\u092f\u0930\u093f\u0902\u0917, \u0910\u0939\u094b\u0932\u0940. \u092e\u093e\u092f \u0915\u0940 \u0938\u094d\u091f\u0945\u0915\u094d\u0938 \u0907\u091c \u092b\u0941\u0932 \u0938\u094d\u091f\u0945\u0915 \u092a\u093e\u092f\u0925\u0928 \u0921\u0947\u0935\u094d\u0939\u0932\u092a\u092e\u0947\u0902\u091f. \u092e\u093e\u092f \u0938\u094d\u0915\u093f\u0932\u094d\u0938 \u0907\u0902\u0915\u094d\u0932\u0942\u0921 \u092a\u093e\u092f\u0925\u0928, \u092e\u093e\u092f \u0938\u093f\u0915\u094d\u0935\u0932 \u092b\u0949\u0930 \u0921\u0947\u091f\u093e\u092c\u0947\u0938, \u092a\u094b\u0938\u094d\u091f \u0935\u093f\u0925 \u0938\u093f\u0915\u094d\u0935\u0932, \u091c\u093e\u0902\u0917\u094b, \u092e\u0936\u0940\u0928 \u0932\u0930\u094d\u0928\u093f\u0902\u0917 \u0905\u0901\u0921 \u0921\u0947\u0935\u094d\u0939\u0949\u092a\u094d\u0938."
+    },
+    {
+        "speaker": "Interviewer",
+        "text": "Thank you, Priyanshu, for the introduction. It's good to hear about your skills and interests.\n\nLooking at your resume, you've worked on an \"AI-Powered Conversational Recommendation Chatbot.\" Could you elaborate on the product filtering and ranking mechanisms you implemented there? How did you approach selecting the features for ranking different products?"
+    }
+]
