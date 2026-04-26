@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Interview from "./pages/Interview";
+import InterviewSetup from "./pages/InterviewSetup";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Feedback from "./pages/Feedback";
 
@@ -25,11 +26,18 @@ export default function App() {
         path="/interview"
         element={
           <ProtectedRoute>
+            <InterviewSetup />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/interview/session"
+        element={
+          <ProtectedRoute>
             <Interview />
           </ProtectedRoute>
         }
       />
-
       <Route
         path="/feedback"
         element={

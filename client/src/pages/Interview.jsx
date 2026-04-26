@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Mic, MicOff, Video, VideoOff, Phone, PlaySquare, Square } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { FilesetResolver, FaceLandmarker } from '@mediapipe/tasks-vision';
 
 // --- 1. SUB-COMPONENTS ---
@@ -41,7 +41,7 @@ const ProctoredVideo = ({ isCameraOn, onTerminate }) => {
       }
 
       const vision = await FilesetResolver.forVisionTasks(
-        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
+        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.32/wasm"
       );
       
       faceLandmarker = await FaceLandmarker.createFromOptions(vision, {
@@ -221,7 +221,15 @@ const Timer = () => {
 // --- 2. MAIN COMPONENT ---
 export default function Interview() {
   const navigate = useNavigate();
-  
+  const location = useLocation();
+  const setupState = location.state || {};
+
+  const [role, setRole] = useState(setupState.role || 'Machine Learning Engineer');
+  const [resumeName, setResumeName] = useState(setupState.resumeName || '');
+  const [initialReply, setInitialReply] = useState(setupState.initialReply || '');
+  const [initialAudio, setInitialAudio] = useState(setupState.initialAudio || null);
+  const [loadedInitial, setLoadedInitial] = useState(false);
+
   const [isMicOn, setIsMicOn] = useState(true);
   const [isCameraOn, setIsCameraOn] = useState(true);
   
@@ -241,7 +249,66 @@ export default function Interview() {
   const isFinalizingRef = useRef(false);
   const chunkTimerRef = useRef(null);
 
+  useEffect(() => {
+    if (!resumeName) {
+      const savedState = sessionStorage.getItem('prepifyInterviewSetup');
+      if (savedState) {
+        try {
+          const parsed = JSON.parse(savedState);
+          setRole(parsed.role || 'Machine Learning Engineer');
+          setResumeName(parsed.resumeName || '');
+          setInitialReply(parsed.initialReply || '');
+          setInitialAudio(parsed.initialAudio || null);
+          return;
+        } catch (error) {
+          console.warn('Failed to parse saved interview setup state', error);
+        }
+      }
+      navigate('/interview');
+    }
+  }, [resumeName, navigate]);
+
+  useEffect(() => {
+    if (initialReply && !loadedInitial) {
+      setLoadedInitial(true);
+      setIsInterviewStarted(true);
+      setChatHistory([{ sender: 'bot', text: initialReply }]);
+      if (initialAudio) {
+        playAIAudio(initialAudio);
+      }
+    }
+  }, [initialReply, initialAudio, loadedInitial]);
+
+  // Cleanup on component unmount (when navigating away)
+  useEffect(() => {
+    return () => {
+      // Stop all audio
+      if (currentAudioRef.current) {
+        currentAudioRef.current.pause();
+        currentAudioRef.current.currentTime = 0;
+        currentAudioRef.current = null;
+      }
+      // Stop recording if active
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+        mediaRecorderRef.current.stop();
+      }
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+      }
+      clearTimeout(chunkTimerRef.current);
+    };
+  }, []);
+
   const handleStartInterview = async () => {
+    if (!resumeName) {
+      setStatusMessage('Please complete the interview setup and upload your resume first.');
+      return;
+    }
+    if (initialReply) {
+      setStatusMessage('Interview already initialized. Start answering when ready.');
+      return;
+    }
+
     setIsAILoading(true);
     setStatusMessage("Initializing Engine...");
     
@@ -261,15 +328,33 @@ export default function Interview() {
     }
   };
 
+  const stopAllAudio = () => {
+    if (currentAudioRef.current) {
+      currentAudioRef.current.pause();
+      currentAudioRef.current.currentTime = 0;
+      currentAudioRef.current = null;
+    }
+    setIsAISpeaking(false);
+  };
+
   const playAIAudio = (base64Audio) => {
     if (isTerminated) return; // Prevent new audio if already locked down
+    
+    // Stop any currently playing audio first
+    if (currentAudioRef.current) {
+      currentAudioRef.current.pause();
+      currentAudioRef.current = null;
+    }
+    
     setIsAISpeaking(true);
     const audio = new Audio("data:audio/mp3;base64," + base64Audio);
-    currentAudioRef.current = audio; // Track the current audio object
+    currentAudioRef.current = audio;
+    
     audio.onended = () => {
       setIsAISpeaking(false);
       currentAudioRef.current = null;
     };
+    
     audio.play();
   };
 
@@ -281,6 +366,9 @@ export default function Interview() {
   const startRecordingLoop = async () => {
     if (isRecording || isTerminated) return; // Block recording if terminated
     try {
+      // Stop any AI audio that might be playing
+      stopAllAudio();
+      
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
       isFinalizingRef.current = false;
@@ -358,15 +446,47 @@ export default function Interview() {
   };
 
   const handleEndInterview = async () => {
+    stopAllAudio(); // Stop all audio immediately
     if (isRecording) stopRecordingLoop();
     try {
-      setStatusMessage("Saving session data...");
+      setStatusMessage("Generating feedback...");
       const response = await fetch('http://localhost:8001/api/end-interview', { method: 'POST' });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('End interview API returned non-ok status:', response.status, errorText);
+        alert('Interview backend error. Please check the server logs.');
+        setStatusMessage('Interview backend error.');
+        return;
+      }
+
       const data = await response.json();
-      navigate('/feedback', { state: { sessionFile: data.filename } });
+      console.log('Raw API response:', data);
+      console.log('Feedback data:', data.feedback);
+
+      const feedbackData = data.feedback || { raw_text: data.raw_output || 'Unable to generate feedback.' };
+      console.log('Final feedbackData to pass:', feedbackData);
+
+      const numericScore = Number(feedbackData?.overall_rating);
+      if (!Number.isNaN(numericScore)) {
+        fetch('http://localhost:3001/api/feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            role: data.role || role,
+            averageScore: numericScore,
+            feedback: feedbackData,
+          }),
+        }).catch((saveError) => {
+          console.warn('Could not save average score to MongoDB', saveError);
+        });
+      }
+
+      navigate('/feedback', { state: { feedback: feedbackData, role: data.role || role } });
     } catch (error) {
-      alert("Error saving interview session.")
-      navigate('/feedback'); // Navigate anyway to avoid trapping user
+      console.error('Error in handleEndInterview:', error);
+      alert('Error generating interview feedback. Check console and server logs.');
+      setStatusMessage('Feedback generation failed.');
     }
   };
 
@@ -385,13 +505,9 @@ export default function Interview() {
       if (streamRef.current) streamRef.current.getTracks().forEach(track => track.stop());
     }
 
-    // 2. Brutally cut off the AI's voice
-    if (currentAudioRef.current) {
-      currentAudioRef.current.pause();
-      currentAudioRef.current.currentTime = 0;
-      currentAudioRef.current = null;
-    }
-    setIsAISpeaking(false);
+    // 2. Brutally cut off the AI's voice using the unified stop function
+    stopAllAudio();
+    
     setStatusMessage("Session Terminated.");
   };
 
@@ -428,8 +544,8 @@ export default function Interview() {
             <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xs">P</div>
             <h1 className="text-xl font-bold text-gray-900">Prepify</h1>
           </div>
-          <div className="flex items-center gap-6 text-sm text-gray-600">
-            <span className="font-medium bg-gray-100 px-3 py-1 rounded-full">Machine Learning Engineer</span>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 gap-4 text-sm text-gray-600">
+            <span className="font-medium bg-gray-100 px-3 py-1 rounded-full">{role}</span>
             <div className="flex items-center gap-2 font-mono bg-white border border-gray-200 px-3 py-1 rounded-md shadow-sm">
               <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
               <Timer />
@@ -491,7 +607,7 @@ export default function Interview() {
 
             <div>
               {!isInterviewStarted ? (
-                <button onClick={handleStartInterview} disabled={isAILoading || isTerminated} className="flex items-center gap-3 px-10 py-4 text-lg bg-blue-600 hover:bg-blue-700 text-white rounded-full font-medium transition-all shadow-md disabled:opacity-50">
+                <button onClick={handleStartInterview} disabled={!resumeName || isAILoading || isTerminated} className="flex items-center gap-3 px-10 py-4 text-lg bg-blue-600 hover:bg-blue-700 text-white rounded-full font-medium transition-all shadow-md disabled:opacity-50">
                   <PlaySquare size={24} /> Start Interview
                 </button>
               ) : (

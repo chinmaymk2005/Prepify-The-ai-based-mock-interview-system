@@ -5,15 +5,8 @@ import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { logout } = useContext(AuthContext);
+  const { logout, user, loading } = useContext(AuthContext);
   const [profileDropdown, setProfileDropdown] = useState(false);
-
-  const mockUserData = {
-    name: "John Doe",
-    targetRole: "Senior Software Engineer",
-    experienceLevel: "Mid-level",
-    email: "john@example.com",
-  };
 
   const mockStats = {
     totalInterviews: 12,
@@ -48,17 +41,17 @@ export default function Dashboard() {
               className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-neutral-100 transition-colors"
             >
               <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
-                {mockUserData.name.charAt(0)}
+                {user?.name?.charAt(0) || "?"}
               </div>
-              <span className="text-sm font-medium text-neutral-700 hidden sm:block">{mockUserData.name}</span>
+              <span className="text-sm font-medium text-neutral-700 hidden sm:block">{user?.name || "Loading..."}</span>
               <ChevronDown className="w-4 h-4 text-neutral-500" />
             </button>
 
             {profileDropdown && (
               <div className="absolute right-0 mt-2 w-48 bg-white border border-neutral-200 rounded-lg shadow-lg py-2">
                 <div className="px-4 py-3 border-b border-neutral-100">
-                  <p className="text-sm font-medium text-neutral-900">{mockUserData.name}</p>
-                  <p className="text-xs text-neutral-500">{mockUserData.email}</p>
+                  <p className="text-sm font-medium text-neutral-900">{user?.name}</p>
+                  <p className="text-xs text-neutral-500">{user?.email}</p>
                 </div>
                 <button className="w-full text-left px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors">
                   Profile Settings
@@ -84,10 +77,10 @@ export default function Dashboard() {
             <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
               <div>
                 <h1 className="text-3xl sm:text-4xl font-bold text-neutral-900 mb-2">
-                  Welcome back, {mockUserData.name.split(" ")[0]}
+                  Welcome back, {user?.name?.split(" ")[0] || "there"}
                 </h1>
                 <p className="text-lg text-neutral-600 mb-1">
-                  Target Role: <span className="font-semibold text-orange-600">{mockUserData.targetRole}</span>
+                  Target Role: <span className="font-semibold text-orange-600">{user?.targetRole || "Not specified"}</span>
                 </p>
                 <p className="text-neutral-600">
                   You're on the right path. Every interview brings you closer to your goal.

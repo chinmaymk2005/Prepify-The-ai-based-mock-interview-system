@@ -85,7 +85,8 @@ export default function Auth() {
             const data = await response.json();
 
             if (response.ok) {
-                login(data.token);
+                // Pass both token and user data to login
+                login(data.token, data.user);
                 // Reset form
                 setFormData({ name: "", email: "", password: "", confirmPassword: "", targetRole: "", experienceLevel: "" });
                 // Redirect to dashboard only on success
